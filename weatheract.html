@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css">
+    <title>Weather Update - Iligan City</title>
+</head>
+<style>
+    body {
+    background-color: #83d8ff69;
+    color: black;
+    margin: 100;
+    padding: 10;
+    background-image: url(rainny.png);
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#weather {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 5px;
+    display: inline-block;
+    width: 80%;
+    text-align: center;
+  }
+
+.day {
+    display: inline-block;
+    width: 10%;
+    margin: 10px;
+    padding: 10px;
+    background-color: lightgray;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+.day img {
+    width: 60px;
+    height: auto;
+}
+footer {
+    margin-top: 8%;
+    padding: 20px;
+    color: black;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold";
+}
+
+/* New Styles for the Search Bar */
+  #search-bar {
+    margin-top: 20px;
+    padding: 10px;
+    
+}
+#city-input {
+    padding: 10px;
+    width: 200px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+#search-button {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: lightgray;
+    color: white;
+    cursor: pointer;
+   
+}
+</style>
+<body>
+    <h4><a class="nav-link text-light" href="index.html">Back</a></h4>
+    <h1>Weather Update</h1>
+    <!-- Search Bar -->
+    <div id="search-bar">
+      <input
+        type="text"
+        id="city-input"
+        placeholder="Enter city name..."
+      />
+      <button id="search-button">Search</button>
+    </div>
+    <div id="weather">
+      <p>Loading weather data...</p>
+    </div>
+    <footer>Niña Mae L. Rober</footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const apiKey = "6cd007c3e4df45feab9164230240409";
+        const weatherContainer = document.getElementById("weather");
+
+        // Function to fetch and display weather data
+        async function fetchWeather(cityName) {
+          const apiEndpoint = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=7`;
+
+          try {
+            const response = await fetch(apiEndpoint);
+            const weatherData = await response.json();
+            console.log(weatherData);
+
+            const currentData = weatherData.current;
+            const forecastDays = weatherData.forecast.forecastday;
+
+            weatherContainer.innerHTML = `
+              <h2>${cityName}</h2>
+              <p><strong>Temperature:</strong> ${currentData.temp_c}°C</p>
+              <p><strong>Weather:</strong> ${currentData.condition.text}</p>
+              <p><strong>Humidity:</strong> ${currentData.humidity}%</p>
+            `;
+
+            forecastDays.forEach((day) => {
+              const date = new Date(day.date).toLocaleDateString("en-US", {
+                weekday: "long",
+              });
+              const temperatureInCelsius = day.day.avgtemp_c;
+              const weatherDescription = day.day.condition.text;
+              const iconUrl = day.day.condition.icon;
+
+              const dayDiv = document.createElement("div");
+              dayDiv.className = "day";
+              dayDiv.innerHTML = `
+                <h3>${date}</h3>
+                <img src="https:${iconUrl}" alt="${weatherDescription}" />
+                <p><strong>Temp:</strong> ${temperatureInCelsius}°C</p>
+                <p><strong>Weather:</strong> ${weatherDescription}</p>
+              `;
+              weatherContainer.appendChild(dayDiv);
+            });
+          } catch (error) {
+            weatherContainer.innerHTML = `<p>Unable to retrieve weather data: ${error.message}</p>`;
+          }
+        }
+
+        // Initial fetch for Iligan City on page load
+        fetchWeather("Iligan");
+
+        // Event listener for the search button
+        document.getElementById("search-button").addEventListener("click", function () {
+          const cityName = document.getElementById("city-input").value;
+          if (cityName) {
+            fetchWeather(cityName);
+          } else {
+            weatherContainer.innerHTML = `<p>Please enter a city name.</p>`;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -119,9 +119,6 @@ h1{
 }
 
 /* feature */
-
-
-
 .item {
     overflow: hidden;
     position: relative;
@@ -142,3 +139,6 @@ h1{
     padding: 0.5rem;
     border-radius: 50%;
 }
+
+
+
